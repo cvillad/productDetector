@@ -1,0 +1,69 @@
+plugins {
+    id 'com.android.application'
+}
+
+repositories {
+    jcenter()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    maven {
+        url  "http://dl.bintray.com/steveliles/maven"
+    }
+    maven { url "https://jitpack.io" }
+}
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.example.cameratest"
+        minSdkVersion 26
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    api 'com.otaliastudios:cameraview:2.6.4'
+    implementation 'org.pytorch:pytorch_android:1.6.0-SNAPSHOT'
+    implementation 'org.pytorch:pytorch_android_torchvision:1.6.0-SNAPSHOT'
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation files('libs/api-0.9.0-SNAPSHOT.jar')
+    implementation "org.slf4j:slf4j-api:${slf4j_version}"
+    implementation "org.slf4j:slf4j-simple:1.7.30"
+    implementation ('ai.djl.android:core:0.8.0') {
+        exclude group: "ai.djl", module: 'api'
+    }
+    runtimeOnly ('ai.djl.pytorch:pytorch-engine:0.8.0'){
+        exclude group: "ai.djl", module: 'api'
+    }
+    runtimeOnly ('ai.djl.android:pytorch-native:0.8.0'){
+        exclude group: "ai.djl", module: 'api'
+    }
+    implementation 'org.opencv:OpenCV-Android:3.1.0'
+    implementation 'com.github.bmoliveira:snake-yaml:v1.18-android'
+}
