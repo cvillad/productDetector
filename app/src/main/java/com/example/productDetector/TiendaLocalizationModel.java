@@ -89,6 +89,7 @@ final public class TiendaLocalizationModel {
         anchors = anchors.div(stride.reshape(-1, 1, 1));
         colors = new int[TiendaClassesNames.YOLO_CLASS.size()][3];
         i = 0;
+
         Random rand = new Random();
         for(String s: TiendaClassesNames.YOLO_CLASS){
             for(int j=0;j<3;j++){
@@ -483,42 +484,6 @@ final public class TiendaLocalizationModel {
         return output;
     }
 
-    public static Image getImageWithBoxes(NDList detections, NDList imgsNDList){
-        NDArray boundingBoxes = detections.get(0).get(":, :4");
-        Image img = ImageFactory.getInstance().fromNDArray(imgsNDList.get(0).transpose(2, 0, 1));
-        int imageWidth = img.getWidth();
-        int imageHeight = img.getHeight();
-        int[] classIndices = detections.get(0).get(":, -1").toType(DataType.INT32, true).flatten().toIntArray();
-        double[] probs = detections.get(0).get(":, -2").toType(DataType.FLOAT64, true).flatten().toDoubleArray();
-
-        int detected = Math.toIntExact(detections.get(0).getShape().get(0));
-
-        NDArray xMin = boundingBoxes.get(":, 0").clip(0, imageWidth).div(imageWidth);
-        NDArray yMin = boundingBoxes.get(":, 1").clip(0, imageHeight).div(imageHeight);
-        NDArray xMax = boundingBoxes.get(":, 2").clip(0, imageWidth).div(imageWidth);
-        NDArray yMax = boundingBoxes.get(":, 3").clip(0, imageHeight).div(imageHeight);
-
-        float[] boxX = xMin.toFloatArray();
-        float[] boxY = yMin.toFloatArray();
-        float[] boxWidth = xMax.sub(xMin).toFloatArray();
-        float[] boxHeight = yMax.sub(yMin).toFloatArray();
-
-        List<String> retClasses = new ArrayList<>(detected);
-        List<Double> retProbs = new ArrayList<>(detected);
-        List<BoundingBox> retBB = new ArrayList<>(detected);
-
-        for (int i = 0; i < detected; i++) {
-            retClasses.add(TiendaClassesNames.YOLO_CLASS.get(classIndices[i]));
-            retProbs.add(probs[i]);
-            Rectangle rect = new Rectangle(boxX[i], boxY[i], boxWidth[i], boxHeight[i]);
-            retBB.add(rect);
-        }
-
-        yoloObjectsDetected = new DetectedObjects(retClasses, retProbs, retBB);
-        img.drawBoundingBoxes(yoloObjectsDetected);
-        return img;
-    }
-
     public static Bitmap getImageWithBoxesOriginalSize(NDList detections, NDArray preprocessImageArray,
                                                       NDArray originalImageArray, Bitmap outputImage){
 
@@ -552,7 +517,6 @@ final public class TiendaLocalizationModel {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(stroke);
         paint.setAntiAlias(true);
-
         for (int i = 0; i < detected; i++) {
             retClasses.add(TiendaClassesNames.YOLO_CLASS.get(classIndices[i]));
             retProbs.add(probs[i]);

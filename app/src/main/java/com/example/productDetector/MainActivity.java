@@ -45,6 +45,7 @@ import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.NDManager;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.repository.zoo.ZooModel;
+import ai.djl.translate.TranslateException;
 
 public class MainActivity extends AppCompatActivity {
     private static final String AUTHORITY=
@@ -123,6 +124,13 @@ public class MainActivity extends AppCompatActivity {
         NDArray outputYoloPreprocess = TiendaLocalizationModel.preprocessYoloOutput(outputYolo);
         NDList detections = TiendaLocalizationModel.NonMaxSuppression(outputYoloPreprocess,
                 0.4, 0.6, true);
+
+        /*try {
+            TiendaClassificationModel.predictCropImages(detections, imgsNDList, predictor);
+        } catch (TranslateException e) {
+            e.printStackTrace();
+        }*/
+
         StringBuilder sb = new StringBuilder();
         //Create Bitmap
         Bitmap bmp = Bitmap.createBitmap(this.bmp.getWidth(), this.bmp.getHeight(), Bitmap.Config.ARGB_8888);
@@ -216,12 +224,12 @@ public class MainActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             try {
                 Log.i("DemoTienda", "loading tienda classification model");
-                //model = TiendaClassificationModel.loadModel();
+                model = TiendaClassificationModel.loadModel();
                 Log.i("DemoTienda", "loading tienda yolo model");
                 yoloModel = TiendaLocalizationModel.loadModel();
                 TiendaLocalizationModel.setYoloConfigurations(modelConfig, yoloModel);
                 Log.i("DemoTienda", "loading models success");
-                //predictor = model.newPredictor();
+                predictor = model.newPredictor();
                 return true;
             } catch (IOException | ModelException e) {
                 Log.e("DemoTienda", null, e);
